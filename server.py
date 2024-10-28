@@ -4,8 +4,9 @@ from pydantic import BaseModel
 app = FastAPI()
 
 class Dados(BaseModel):
-    nome: str
-    idade: int
+    bid: int
+    ask: int
+    timestamp: str
 
 @app.post("/receber_dados")
 async def receber_dados(request: Request):
