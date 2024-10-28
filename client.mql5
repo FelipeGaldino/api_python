@@ -14,8 +14,9 @@ void OnStart()
    string responseHeaders;
    int statusCode;
 
-   // Converter o corpo da requisição para char array
-   StringToCharArray(jsonData, post);
+   // Converter o corpo da requisição para char array, excluindo o caractere nulo
+   int jsonLength = StringLen(jsonData);
+   StringToCharArray(jsonData, post, 0, jsonLength);
 
    // Fazer a requisição POST
    ResetLastError();
