@@ -1,42 +1,48 @@
-//+------------------------------------------------------------------+
-//|                                              ClienteAPI.mq5      |
-//+------------------------------------------------------------------+
-
 void OnStart()
-  {
-   // URL do endpoint da API
-   string url = "http://127.0.0.1:8000/receber_dados";
+{
+    // URL do endpoint da API
+    string url = "http://127.0.0.1:8000/receber_dados";
 
-   // Dados em formato JSON
-   string jsonData = "{\"nome\": \"Maria\", \"idade\": 25}";
+    // Dados em formato JSON
+    string jsonData = "{\"nome\": \"Maria\", \"idade\": 25}";
 
-   // Cabeçalhos HTTP
-   string headers = "Content-Type: application/json\r\n";
+    // Cabeçalhos HTTP
+    string headers = "Content-Type: application/json\r\n";
 
-   // Variáveis para a função WebRequest
-   char post[], result[];
-   string responseHeaders;
-   int statusCode;
+    // Variáveis para a função WebRequest
+    char post[], result[];
+    string responseHeaders;
+    int statusCode;
 
-   // Converter o corpo da requisição para char array
-   StringToCharArray(jsonData, post);
+    // Converter o corpo da requisição para char array com codificação UTF-8
+    StringToCharArray(jsonData, post, 0, WHOLE_ARRAY, CP_UTF8);
 
-   // Fazer a requisição POST
-   ResetLastError();
-   int res = WebRequest("POST", url, headers, 5000, post, result, responseHeaders);
-   statusCode = res;
+    // Fazer a requisição POST
+    ResetLastError();
+    int res = WebRequest("POST", url, headers, 5000, post, result, responseHeaders);
+    int erro = GetLastError();
 
-   if(res == -1)
-     {
-      int erro = GetLastError();
-      PrintFormat("Erro na WebRequest. Código do erro: %d", erro);
-      return;
-     }
+    if(res == -1)
+    {
+        PrintFormat("Erro na WebRequest. Código do erro: %d", erro);
+        PrintFormat("Descrição do erro: %s", ErrorDescription(erro));
+        return;
+    }
 
-   // Converter a resposta para string
-   string responseText = CharArrayToString(result, 0, ArraySize(result) - 1);
+    // Converter a resposta para string
+    string responseText = CharArrayToString(result);
 
-   // Exibir o código de status e a resposta
-   Print("Status Code: ", statusCode);
-   Print("Resposta da API: ", responseText);
-  }
+    // Extrair o código de status HTTP dos headers
+    string statusLine = StringGetLine(responseHeaders, 0);
+    string tokens[];
+    int count = StringSplit(statusLine, ' ', tokens);
+    int httpStatusCode = -1;
+    if(count >= 2)
+    {
+        httpStatusCode = (int)tokens[1];
+    }
+
+    // Exibir o código de status e a resposta
+    Print("HTTP Status Code: ", httpStatusCode);
+    Print("Resposta da API: ", responseText);
+}
