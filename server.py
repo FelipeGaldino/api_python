@@ -1,14 +1,16 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Request
+import uvicorn
 
 app = FastAPI()
 
-class Dados(BaseModel):
-    nome: str
-    idade: int
-
 @app.post("/receber_dados")
-async def receber_dados(dados: Dados):
-    print("Dados recebidos:", dados)
-    # Você pode processar os dados aqui
-    return {"mensagem": dados }
+async def receber_dados(request: Request):
+    body = await request.body()
+    print("Corpo da requisição bruto:", body)
+    try:
+        data = await request.json()
+        print("JSON decodificado:", data)
+        return {"mensagem": data}
+    except Exception as e:
+        print("Erro ao decodificar JSON:", e)
+        return {"erro": str(e)}
