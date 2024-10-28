@@ -6,21 +6,22 @@ void OnStart()
    // Dados em formato JSON
    string jsonData = "{\"nome\": \"Maria\", \"idade\": 25}";
 
-   // Cabeçalhos HTTP
-   string headers = "Content-Type: application/json\r\n";
-
    // Variáveis para a função WebRequest
-   char post[], result[];
-   string responseHeaders;
+   uchar utf8[];
+   char result[];
+   string headers, responseHeaders;
    int statusCode;
 
-   // Converter o corpo da requisição para char array, excluindo o caractere nulo
-   int jsonLength = StringLen(jsonData);
-   StringToCharArray(jsonData, post, 0, jsonLength);
+   // Converter string para UTF-8
+   int dataLength = StringToCharArray(jsonData, utf8, 0, WHOLE_ARRAY, CP_UTF8);
+   ArrayResize(utf8, dataLength);
+
+   // Cabeçalhos HTTP com Content-Length
+   headers = StringFormat("Content-Type: application/json\r\nContent-Length: %d\r\n", dataLength);
 
    // Fazer a requisição POST
    ResetLastError();
-   int res = WebRequest("POST", url, headers, 8000, post, result, responseHeaders);
+   int res = WebRequest("POST", url, headers, 8000, utf8, result, responseHeaders);
    statusCode = res;
 
    if(res == -1)
@@ -31,7 +32,7 @@ void OnStart()
      }
 
    // Converter a resposta para string
-   string responseText = CharArrayToString(result, 0, ArraySize(result) - 1);
+   string responseText = CharArrayToString(result);
 
    // Exibir o código de status e a resposta
    Print("Status Code: ", statusCode);
