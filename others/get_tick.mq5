@@ -13,7 +13,7 @@ int OnInit()
    ResetLastError();
    
    // NAME FILE
-   filehandle=FileOpen("TICK_"+Symbol()+".csv",FILE_WRITE|FILE_CSV);
+   filehandle=FileOpen("18_12_TICK_"+Symbol()+".csv",FILE_WRITE|FILE_CSV);
    if(filehandle!=INVALID_HANDLE)
      {      
       FileWrite(filehandle,"timestamp bid ask");
@@ -39,7 +39,7 @@ void OnTick()
       
       if (bid != last_tick_bid || ask != last_tick_ask)
       {
-       Print("DATE TIME : ",timestamp," Tick Bid : ",int(last_tick.bid)," ASK : ",int(last_tick.ask));
+       //Print("DATE TIME : ",timestamp," Tick Bid : ",int(last_tick.bid)," ASK : ",int(last_tick.ask));
        FileWrite(filehandle,last_tick.time,bid,ask);
        last_tick_bid = bid;
        last_tick_ask = ask;

@@ -15,7 +15,7 @@ async def receber_dados(request: Request):
     try:
         dados = Dados.parse_raw(body_bytes)
         print("Dados recebidos:", dados)
-        return {"mensagem": dados.dict()}
+        return {"mensagem servidor": dados.dict()}
     except Exception as e:
         print("Erro ao decodificar JSON:", e)
         return {"erro": str(e)}
